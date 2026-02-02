@@ -1,193 +1,106 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Birthday Surprise ❤️</title>
-
   <style>
-    :root{
-      --pink:#ff4d88;
-      --bg1:#ffe6f0;
-      --bg2:#ffffff;
-      --dark:#111;
-    }
-
+    :root{ --pink:#ff4d88; --bg1:#ffe6f0; --bg2:#fff; --dark:#111; }
     body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
-      min-height:100vh;
-      display:grid;
-      place-items:center;
-      padding:18px;
-      text-align:center;
-      overflow-x:hidden;
+      margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      background:radial-gradient(circle at top,var(--bg1),var(--bg2));
+      min-height:100vh; display:grid; place-items:center; padding:16px;
+      text-align:center; overflow-x:hidden;
     }
-
+    #confetti{ position:fixed; inset:0; pointer-events:none; z-index:0; }
     .wrap{
-      width:min(540px, 100%);
-      background: rgba(255,255,255,0.75);
-      border: 1px solid rgba(255, 77, 136, 0.20);
-      border-radius:22px;
-      padding:20px;
-      box-shadow: 0 18px 60px rgba(0,0,0,0.12);
+      position:relative; z-index:1;
+      width:min(560px,100%); background:rgba(255,255,255,.78);
+      border:1px solid rgba(255,77,136,.20); border-radius:22px;
+      padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.12);
       backdrop-filter: blur(10px);
     }
+    .tiny{ margin:0; opacity:.75; font-size:13px; }
+    h1{ margin:10px 0 6px; font-size:30px; }
+    .sub{ margin:0 0 14px; opacity:.82; font-size:14px; }
 
-    .tiny{
-      margin:0;
-      opacity:.75;
-      font-size:13px;
-    }
-
-    h1{
-      margin:10px 0 6px;
-      font-size:32px;
-      letter-spacing:0.2px;
-    }
-
-    .sub{
-      margin:0 0 14px;
-      opacity:.8;
-      font-size:14px;
-    }
-
-    /* Countdown boxes */
-    .countdown{
-      display:grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap:10px;
-      margin:14px 0 18px;
-    }
+    .countdown{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:12px 0 14px; }
     .box{
-      background: rgba(255, 77, 136, 0.08);
-      border: 1px solid rgba(255, 77, 136, 0.18);
-      border-radius:16px;
-      padding:12px 10px;
+      background:rgba(255,77,136,.08);
+      border:1px solid rgba(255,77,136,.18);
+      border-radius:16px; padding:12px 10px;
     }
-    .num{
-      font-size:26px;
-      font-weight:800;
-      line-height:1;
+    .num{ font-size:26px; font-weight:800; line-height:1; }
+    .lbl{ font-size:12px; opacity:.75; margin-top:6px; }
+
+    .pill{
+      display:inline-block; padding:8px 12px; border-radius:999px;
+      border:1px solid rgba(255,77,136,.25); background:rgba(255,77,136,.10);
+      font-size:13px; opacity:.95; margin-bottom:10px;
     }
-    .lbl{
-      font-size:12px;
-      opacity:.75;
-      margin-top:6px;
+    .btn{
+      border:0; background:var(--pink); color:#fff;
+      padding:12px 16px; border-radius:14px; font-size:15px;
+      cursor:pointer; box-shadow:0 12px 26px rgba(255,77,136,.30);
     }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
+    .btn:active{ transform:scale(.98); }
+
+    .divider{ height:1px; background:rgba(0,0,0,.08); margin:14px 0; }
+
+    /* Steps */
+    .step{ display:none; margin-top:14px; }
+    .step.show{ display:block; }
+    .hint{ font-size:13px; opacity:.75; margin:0 0 10px; }
 
     /* Flip card */
-    .flip-area{
-      margin-top:8px;
-    }
-    .hint{
-      font-size:13px;
-      opacity:.75;
-      margin:0 0 10px;
-    }
-
-    .card{
-      width:100%;
-      height:340px;
-      perspective: 1200px;
-    }
-
+    .card{ width:100%; height:340px; perspective:1200px; }
     .inner{
-      width:100%;
-      height:100%;
-      position:relative;
-      transform-style: preserve-3d;
-      transition: transform 0.8s cubic-bezier(.2,.8,.2,1);
+      width:100%; height:100%; position:relative; transform-style:preserve-3d;
+      transition:transform .85s cubic-bezier(.2,.8,.2,1);
       border-radius:18px;
     }
-
-    .inner.flipped{
-      transform: rotateY(180deg);
-    }
-
+    .inner.flipped{ transform:rotateY(180deg); }
     .face{
-      position:absolute;
-      inset:0;
-      border-radius:18px;
-      overflow:hidden;
-      backface-visibility: hidden;
-      border: 1px solid rgba(0,0,0,0.08);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+      position:absolute; inset:0; border-radius:18px; overflow:hidden;
+      backface-visibility:hidden; border:1px solid rgba(0,0,0,.08);
+      box-shadow:0 10px 30px rgba(0,0,0,.10);
     }
-
-    .front img{
-      width:100%;
-      height:100%;
-      object-fit: cover;
-      display:block;
-    }
-
+    .front img{ width:100%; height:100%; object-fit:cover; display:block; }
     .back{
-      transform: rotateY(180deg);
-      background: white;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      padding:18px;
-      gap:12px;
+      transform:rotateY(180deg);
+      background:#fff; display:flex; flex-direction:column;
+      justify-content:center; align-items:center; padding:18px; gap:12px;
     }
-
     .msg{
-      margin:0;
-      font-size:16px;
-      line-height:1.6;
-      opacity:.92;
-      background: rgba(255, 77, 136, 0.08);
-      border: 1px solid rgba(255, 77, 136, 0.18);
-      border-radius:16px;
-      padding:14px;
+      margin:0; font-size:16px; line-height:1.6; opacity:.92;
+      background:rgba(255,77,136,.08);
+      border:1px solid rgba(255,77,136,.18);
+      border-radius:16px; padding:14px;
     }
+    .from{ margin:0; font-size:14px; opacity:.85; }
 
-    .from{
-      margin:0;
-      font-size:14px;
-      opacity:.85;
-    }
-
-    button{
-      margin-top:14px;
-      border:0;
-      background: var(--pink);
-      color:white;
-      padding:12px 16px;
-      border-radius:14px;
-      font-size:15px;
+    /* Balloons */
+    .balloons{ display:flex; justify-content:center; flex-wrap:wrap; gap:12px; margin-top:10px; }
+    .balloon{
+      width:68px; height:86px; border-radius:50% 50% 45% 45%;
+      border:1px solid rgba(255,77,136,.25);
+      position:relative;
+      animation: float 2.4s ease-in-out infinite;
       cursor:pointer;
-      box-shadow: 0 12px 26px rgba(255,77,136,0.30);
     }
-    button:active{ transform: scale(.98); }
-
-    /* Confetti canvas */
-    #confetti{
-      position:fixed;
-      inset:0;
+    .balloon::after{
+      content:""; position:absolute; left:50%; top:86px; width:2px; height:26px;
+      background:rgba(0,0,0,.18);
+    }
+    .balloon.popped{
+      opacity:.15; transform:scale(.90); filter:grayscale(1);
       pointer-events:none;
-      z-index:0;
     }
-    .wrap{ position:relative; z-index:1; }
-
-    .done{
-      display:none;
-      margin-top:10px;
-      font-size:15px;
-      font-weight:700;
-      color: var(--dark);
-      background: rgba(255, 77, 136, 0.10);
-      border: 1px solid rgba(255, 77, 136, 0.22);
-      padding:12px 14px;
-      border-radius:16px;
-    }
-    .done.show{ display:block; }
+    @keyframes float{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
 
     @media (max-width:420px){
-      h1{ font-size:28px; }
+      h1{ font-size:27px; }
       .card{ height:320px; }
       .countdown{ gap:8px; }
     }
@@ -195,162 +108,206 @@
 </head>
 
 <body>
-  <canvas id="confetti"></canvas>
+<canvas id="confetti"></canvas>
 
-  <div class="wrap">
-    <p class="tiny">A little surprise made by me 🫶</p>
-    <h1>Hey <span id="herName">HER_NAME</span> ❤️</h1>
-    <p class="sub">Countdown to your birthday is running…</p>
+<div class="wrap">
+  <p class="tiny">A little surprise made by me 🫶</p>
+  <h1>Hey <span id="herName">HER_NAME</span> ❤️</h1>
+  <p class="sub" id="subtitle">Wait for 10 seconds… then it starts 😌</p>
 
-    <div class="countdown">
-      <div class="box"><div class="num" id="d">00</div><div class="lbl">Days</div></div>
-      <div class="box"><div class="num" id="h">00</div><div class="lbl">Hours</div></div>
-      <div class="box"><div class="num" id="m">00</div><div class="lbl">Minutes</div></div>
-      <div class="box"><div class="num" id="s">00</div><div class="lbl">Seconds</div></div>
-    </div>
-
-    <div id="done" class="done">🎉 It’s your birthdayyyy! Flip the card ❤️</div>
-
-    <div class="flip-area">
-      <p class="hint">Tap the photo to rotate & read my message 👇</p>
-
-      <div class="card">
-        <div class="inner" id="inner">
-          <!-- FRONT: photo -->
-          <div class="face front">
-            <!-- ✅ Your current image name -->
-            <img src="IMG-20260202-WA0010.jpg" alt="memory"/>
-          </div>
-
-          <!-- BACK: message -->
-          <div class="face back">
-            <p class="msg" id="msg">
-              I don’t have fancy words… but I have you.  
-              And that’s my favorite thing.  
-              Happy Birthday, my love ❤️
-            </p>
-            <p class="from">— from <b id="yourName">YOUR_NAME</b></p>
-          </div>
-        </div>
-      </div>
-
-      <button id="flipBtn">Rotate / Flip</button>
-    </div>
+  <!-- We’ll show 00 Days always, and run HH:MM:SS from 00:00:10 -->
+  <div class="countdown">
+    <div class="box"><div class="num" id="d">00</div><div class="lbl">Days</div></div>
+    <div class="box"><div class="num" id="h">00</div><div class="lbl">Hours</div></div>
+    <div class="box"><div class="num" id="m">00</div><div class="lbl">Minutes</div></div>
+    <div class="box"><div class="num" id="s">10</div><div class="lbl">Seconds</div></div>
   </div>
 
-  <script>
-    // ✅ EDIT THESE 3 THINGS ONLY
-    const HER_NAME = "Aastha";
-    const YOUR_NAME = "Mohit";
+  <div class="pill" id="lockPill">🔒 Locked… starting in <b id="secLeft">10</b>s</div>
+  <br/>
+  <button class="btn" id="startBtn" disabled>Start the surprise ✨</button>
 
-    // Set her birthday midnight (India time). Example: Feb 18, 2026 at 00:00
-    // Format: "YYYY-MM-DDTHH:MM:SS+05:30"
-    const BIRTHDAY_DATE = "2026-02-18T00:00:00+05:30";
+  <div class="divider"></div>
 
-    // Apply names
-    document.getElementById("herName").textContent = HER_NAME;
-    document.getElementById("yourName").textContent = YOUR_NAME;
+  <!-- Step 1 -->
+  <div class="step" id="step1">
+    <p class="hint">Step 1/3 — A small note</p>
+    <p class="msg">
+      I didn’t want a normal wish.  
+      So I made this little experience for you. ❤️
+    </p>
+    <br/>
+    <button class="btn" id="toStep2">Next →</button>
+  </div>
 
-    // Flip logic (tap photo OR button)
-    const inner = document.getElementById("inner");
-    document.getElementById("flipBtn").addEventListener("click", () => {
-      inner.classList.toggle("flipped");
-    });
-    inner.addEventListener("click", () => {
-      inner.classList.toggle("flipped");
-    });
+  <!-- Step 2 -->
+  <div class="step" id="step2">
+    <p class="hint">Step 2/3 — Tap the photo to flip</p>
 
-    // Countdown logic
-    const dEl = document.getElementById("d");
-    const hEl = document.getElementById("h");
-    const mEl = document.getElementById("m");
-    const sEl = document.getElementById("s");
-    const done = document.getElementById("done");
+    <div class="card">
+      <div class="inner" id="inner">
+        <div class="face front">
+          <img src="IMG-20260202-WA0010.jpg" alt="memory"/>
+        </div>
+        <div class="face back">
+          <p class="msg" id="mainMsg">
+            You make my world better.  
+            I’m grateful for you.  
+            Happy Birthday, my love ❤️
+          </p>
+          <p class="from">— from <b id="yourName">YOUR_NAME</b></p>
+        </div>
+      </div>
+    </div>
 
-    const target = new Date(BIRTHDAY_DATE).getTime();
+    <br/>
+    <button class="btn" id="toStep3">Next →</button>
+  </div>
 
-    function pad(n){ return String(n).padStart(2, "0"); }
+  <!-- Step 3 -->
+  <div class="step" id="step3">
+    <p class="hint">Step 3/3 — Pop all balloons 🎈 (tap them)</p>
+    <p class="sub" id="balloonText">Pop 6 balloons to unlock the final line…</p>
 
-    let celebrated = false;
+    <div class="balloons" id="balloons"></div>
 
-    function tick(){
-      const now = Date.now();
-      let diff = target - now;
+    <div class="divider"></div>
 
-      if (diff <= 0){
-        dEl.textContent = "00";
-        hEl.textContent = "00";
-        mEl.textContent = "00";
-        sEl.textContent = "00";
+    <p class="msg" id="finalLine" style="display:none;">
+      Okay… now it’s official: today is YOUR day.  
+      I love you. 💖
+    </p>
+  </div>
+</div>
 
-        done.classList.add("show");
-        if (!celebrated){
-          celebrated = true;
-          startConfetti();
-        }
-        return;
+<script>
+  // ✅ EDIT THESE ONLY
+  const HER_NAME = "Her Name";
+  const YOUR_NAME = "Your Name";
+
+  // Apply names
+  document.getElementById("herName").textContent = HER_NAME;
+  document.getElementById("yourName").textContent = YOUR_NAME;
+
+  // Surprise countdown: always 10 seconds from when the page opens
+  const dEl = document.getElementById("d");
+  const hEl = document.getElementById("h");
+  const mEl = document.getElementById("m");
+  const sEl = document.getElementById("s");
+  const secLeftEl = document.getElementById("secLeft");
+  const lockPill = document.getElementById("lockPill");
+  const startBtn = document.getElementById("startBtn");
+  const subtitle = document.getElementById("subtitle");
+
+  let remaining = 10; // seconds
+
+  dEl.textContent = "00";
+  hEl.textContent = "00";
+  mEl.textContent = "00";
+
+  function updateTimer(){
+    sEl.textContent = String(remaining).padStart(2,"0");
+    secLeftEl.textContent = remaining;
+  }
+  updateTimer();
+
+  const timer = setInterval(() => {
+    remaining--;
+    if (remaining <= 0){
+      remaining = 0;
+      updateTimer();
+      clearInterval(timer);
+
+      lockPill.textContent = "🔓 Unlocked — Start now ✨";
+      subtitle.textContent = "Okay… now open your surprise 😌";
+      startBtn.disabled = false;
+
+      startConfetti();
+      return;
+    }
+    updateTimer();
+  }, 1000);
+
+  // Steps
+  const show = (id) => document.getElementById(id).classList.add("show");
+  const hide = (id) => document.getElementById(id).classList.remove("show");
+
+  startBtn.addEventListener("click", () => {
+    show("step1");
+    startBtn.style.display = "none";
+    lockPill.style.display = "none";
+  });
+
+  document.getElementById("toStep2").addEventListener("click", () => {
+    hide("step1"); show("step2");
+  });
+
+  document.getElementById("toStep3").addEventListener("click", () => {
+    hide("step2"); show("step3");
+  });
+
+  // Flip
+  const inner = document.getElementById("inner");
+  inner.addEventListener("click", () => inner.classList.toggle("flipped"));
+
+  // Balloons
+  const balloonsWrap = document.getElementById("balloons");
+  const balloonText = document.getElementById("balloonText");
+  const finalLine = document.getElementById("finalLine");
+  const balloonCount = 6;
+  let popped = 0;
+
+  for (let i=0; i<balloonCount; i++){
+    const b = document.createElement("div");
+    b.className = "balloon";
+    b.style.animationDelay = (Math.random()*1.2)+"s";
+    b.style.background = `hsla(${Math.random()*360}, 90%, 70%, 0.55)`;
+    b.addEventListener("click", () => {
+      if (b.classList.contains("popped")) return;
+      b.classList.add("popped");
+      popped++;
+      balloonText.textContent = `Popped: ${popped} / ${balloonCount}`;
+      if (popped === balloonCount){
+        finalLine.style.display = "block";
+        startConfetti();
       }
+    });
+    balloonsWrap.appendChild(b);
+  }
 
-      const days = Math.floor(diff / (1000*60*60*24));
-      diff %= (1000*60*60*24);
-      const hours = Math.floor(diff / (1000*60*60));
-      diff %= (1000*60*60);
-      const mins = Math.floor(diff / (1000*60));
-      const secs = Math.floor((diff % (1000*60)) / 1000);
+  // Confetti (simple canvas)
+  const canvas = document.getElementById("confetti");
+  const ctx = canvas.getContext("2d");
+  function resize(){ canvas.width = innerWidth; canvas.height = innerHeight; }
+  addEventListener("resize", resize); resize();
 
-      dEl.textContent = pad(days);
-      hEl.textContent = pad(hours);
-      mEl.textContent = pad(mins);
-      sEl.textContent = pad(secs);
+  let particles = [];
+  function startConfetti(){
+    particles = Array.from({length: 220}, () => ({
+      x: Math.random()*canvas.width,
+      y: -20 - Math.random()*canvas.height,
+      r: 4 + Math.random()*6,
+      vx: -2 + Math.random()*4,
+      vy: 2 + Math.random()*6,
+      a: Math.random()*Math.PI*2,
+      hue: Math.random()*360
+    }));
+    requestAnimationFrame(draw);
+  }
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(const p of particles){
+      p.x += p.vx; p.y += p.vy; p.a += 0.03;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.a);
+      ctx.fillStyle = `hsl(${p.hue}, 90%, 60%)`;
+      ctx.fillRect(-p.r, -p.r, p.r*2, p.r*2);
+      ctx.restore();
+      if(p.y > canvas.height + 30){ p.y = -20; p.x = Math.random()*canvas.width; }
     }
-
-    tick();
-    setInterval(tick, 1000);
-
-    // Confetti (simple canvas)
-    const canvas = document.getElementById("confetti");
-    const ctx = canvas.getContext("2d");
-    function resize(){
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resize);
-    resize();
-
-    let particles = [];
-    function startConfetti(){
-      particles = Array.from({length: 220}, () => ({
-        x: Math.random()*canvas.width,
-        y: -20 - Math.random()*canvas.height,
-        r: 4 + Math.random()*6,
-        vx: -2 + Math.random()*4,
-        vy: 2 + Math.random()*6,
-        a: Math.random()*Math.PI*2,
-        hue: Math.random()*360
-      }));
-      requestAnimationFrame(draw);
-    }
-    function draw(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      for(const p of particles){
-        p.x += p.vx;
-        p.y += p.vy;
-        p.a += 0.03;
-
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.a);
-        ctx.fillStyle = `hsl(${p.hue}, 90%, 60%)`;
-        ctx.fillRect(-p.r, -p.r, p.r*2, p.r*2);
-        ctx.restore();
-
-        if (p.y > canvas.height + 30){
-          p.y = -20;
-          p.x = Math.random()*canvas.width;
-        }
-      }
-      requestAnimationFrame(draw);
-    }
-  </script>
+    requestAnimationFrame(draw);
+  }
+</script>
 </body>
 </html>
