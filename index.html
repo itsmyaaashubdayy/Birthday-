@@ -1,77 +1,356 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<title>Happy Birthday ❤️</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Birthday Surprise ❤️</title>
 
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#ffe6f0;
-  text-align:center;
-}
-.box{
-  background:white;
-  margin:30px auto;
-  padding:20px;
-  border-radius:20px;
-  width:90%;
-  max-width:500px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.15);
-}
-button{
-  background:#ff4d88;
-  color:white;
-  border:none;
-  padding:12px 20px;
-  border-radius:12px;
-  font-size:16px;
-  cursor:pointer;
-}
-button:hover{
-  background:#ff2f73;
-}
-img{
-  width:100%;
-  border-radius:15px;
-  margin-top:15px;
-}
-.hidden{
-  display:none;
-}
-</style>
+  <style>
+    :root{
+      --pink:#ff4d88;
+      --bg1:#ffe6f0;
+      --bg2:#ffffff;
+      --dark:#111;
+    }
 
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+      min-height:100vh;
+      display:grid;
+      place-items:center;
+      padding:18px;
+      text-align:center;
+      overflow-x:hidden;
+    }
+
+    .wrap{
+      width:min(540px, 100%);
+      background: rgba(255,255,255,0.75);
+      border: 1px solid rgba(255, 77, 136, 0.20);
+      border-radius:22px;
+      padding:20px;
+      box-shadow: 0 18px 60px rgba(0,0,0,0.12);
+      backdrop-filter: blur(10px);
+    }
+
+    .tiny{
+      margin:0;
+      opacity:.75;
+      font-size:13px;
+    }
+
+    h1{
+      margin:10px 0 6px;
+      font-size:32px;
+      letter-spacing:0.2px;
+    }
+
+    .sub{
+      margin:0 0 14px;
+      opacity:.8;
+      font-size:14px;
+    }
+
+    /* Countdown boxes */
+    .countdown{
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap:10px;
+      margin:14px 0 18px;
+    }
+    .box{
+      background: rgba(255, 77, 136, 0.08);
+      border: 1px solid rgba(255, 77, 136, 0.18);
+      border-radius:16px;
+      padding:12px 10px;
+    }
+    .num{
+      font-size:26px;
+      font-weight:800;
+      line-height:1;
+    }
+    .lbl{
+      font-size:12px;
+      opacity:.75;
+      margin-top:6px;
+    }
+
+    /* Flip card */
+    .flip-area{
+      margin-top:8px;
+    }
+    .hint{
+      font-size:13px;
+      opacity:.75;
+      margin:0 0 10px;
+    }
+
+    .card{
+      width:100%;
+      height:340px;
+      perspective: 1200px;
+    }
+
+    .inner{
+      width:100%;
+      height:100%;
+      position:relative;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(.2,.8,.2,1);
+      border-radius:18px;
+    }
+
+    .inner.flipped{
+      transform: rotateY(180deg);
+    }
+
+    .face{
+      position:absolute;
+      inset:0;
+      border-radius:18px;
+      overflow:hidden;
+      backface-visibility: hidden;
+      border: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+    }
+
+    .front img{
+      width:100%;
+      height:100%;
+      object-fit: cover;
+      display:block;
+    }
+
+    .back{
+      transform: rotateY(180deg);
+      background: white;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      padding:18px;
+      gap:12px;
+    }
+
+    .msg{
+      margin:0;
+      font-size:16px;
+      line-height:1.6;
+      opacity:.92;
+      background: rgba(255, 77, 136, 0.08);
+      border: 1px solid rgba(255, 77, 136, 0.18);
+      border-radius:16px;
+      padding:14px;
+    }
+
+    .from{
+      margin:0;
+      font-size:14px;
+      opacity:.85;
+    }
+
+    button{
+      margin-top:14px;
+      border:0;
+      background: var(--pink);
+      color:white;
+      padding:12px 16px;
+      border-radius:14px;
+      font-size:15px;
+      cursor:pointer;
+      box-shadow: 0 12px 26px rgba(255,77,136,0.30);
+    }
+    button:active{ transform: scale(.98); }
+
+    /* Confetti canvas */
+    #confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+    }
+    .wrap{ position:relative; z-index:1; }
+
+    .done{
+      display:none;
+      margin-top:10px;
+      font-size:15px;
+      font-weight:700;
+      color: var(--dark);
+      background: rgba(255, 77, 136, 0.10);
+      border: 1px solid rgba(255, 77, 136, 0.22);
+      padding:12px 14px;
+      border-radius:16px;
+    }
+    .done.show{ display:block; }
+
+    @media (max-width:420px){
+      h1{ font-size:28px; }
+      .card{ height:320px; }
+      .countdown{ gap:8px; }
+    }
+  </style>
 </head>
 
 <body>
+  <canvas id="confetti"></canvas>
 
-<div class="box">
-  <h2>🎂 Happy Birthday</h2>
-  <h1>My Love ❤️</h1>
+  <div class="wrap">
+    <p class="tiny">A little surprise made by me 🫶</p>
+    <h1>Hey <span id="herName">HER_NAME</span> ❤️</h1>
+    <p class="sub">Countdown to your birthday is running…</p>
 
-  <p>Tap the gift below 🎁</p>
+    <div class="countdown">
+      <div class="box"><div class="num" id="d">00</div><div class="lbl">Days</div></div>
+      <div class="box"><div class="num" id="h">00</div><div class="lbl">Hours</div></div>
+      <div class="box"><div class="num" id="m">00</div><div class="lbl">Minutes</div></div>
+      <div class="box"><div class="num" id="s">00</div><div class="lbl">Seconds</div></div>
+    </div>
 
-  <button onclick="openGift()">Open Gift</button>
+    <div id="done" class="done">🎉 It’s your birthdayyyy! Flip the card ❤️</div>
 
-  <div id="gift" class="hidden">
-    <p>
-      You make my life brighter every single day.  
-      I’m grateful for you and so lucky to have you.  
-      Happy Birthday, my love ❤️
-    </p>
+    <div class="flip-area">
+      <p class="hint">Tap the photo to rotate & read my message 👇</p>
 
-    <img src="IMG-20260202-WA0010.jpg">
+      <div class="card">
+        <div class="inner" id="inner">
+          <!-- FRONT: photo -->
+          <div class="face front">
+            <!-- ✅ Your current image name -->
+            <img src="IMG-20260202-WA0010.jpg" alt="memory"/>
+          </div>
 
-    <p>— From <b>Your Name</b></p>
+          <!-- BACK: message -->
+          <div class="face back">
+            <p class="msg" id="msg">
+              I don’t have fancy words… but I have you.  
+              And that’s my favorite thing.  
+              Happy Birthday, my love ❤️
+            </p>
+            <p class="from">— from <b id="yourName">YOUR_NAME</b></p>
+          </div>
+        </div>
+      </div>
+
+      <button id="flipBtn">Rotate / Flip</button>
+    </div>
   </div>
-</div>
 
-<script>
-function openGift(){
-  document.getElementById("gift").style.display="block";
-}
-</script>
+  <script>
+    // ✅ EDIT THESE 3 THINGS ONLY
+    const HER_NAME = "Aastha";
+    const YOUR_NAME = "Mohit";
 
+    // Set her birthday midnight (India time). Example: Feb 18, 2026 at 00:00
+    // Format: "YYYY-MM-DDTHH:MM:SS+05:30"
+    const BIRTHDAY_DATE = "2026-02-18T00:00:00+05:30";
+
+    // Apply names
+    document.getElementById("herName").textContent = HER_NAME;
+    document.getElementById("yourName").textContent = YOUR_NAME;
+
+    // Flip logic (tap photo OR button)
+    const inner = document.getElementById("inner");
+    document.getElementById("flipBtn").addEventListener("click", () => {
+      inner.classList.toggle("flipped");
+    });
+    inner.addEventListener("click", () => {
+      inner.classList.toggle("flipped");
+    });
+
+    // Countdown logic
+    const dEl = document.getElementById("d");
+    const hEl = document.getElementById("h");
+    const mEl = document.getElementById("m");
+    const sEl = document.getElementById("s");
+    const done = document.getElementById("done");
+
+    const target = new Date(BIRTHDAY_DATE).getTime();
+
+    function pad(n){ return String(n).padStart(2, "0"); }
+
+    let celebrated = false;
+
+    function tick(){
+      const now = Date.now();
+      let diff = target - now;
+
+      if (diff <= 0){
+        dEl.textContent = "00";
+        hEl.textContent = "00";
+        mEl.textContent = "00";
+        sEl.textContent = "00";
+
+        done.classList.add("show");
+        if (!celebrated){
+          celebrated = true;
+          startConfetti();
+        }
+        return;
+      }
+
+      const days = Math.floor(diff / (1000*60*60*24));
+      diff %= (1000*60*60*24);
+      const hours = Math.floor(diff / (1000*60*60));
+      diff %= (1000*60*60);
+      const mins = Math.floor(diff / (1000*60));
+      const secs = Math.floor((diff % (1000*60)) / 1000);
+
+      dEl.textContent = pad(days);
+      hEl.textContent = pad(hours);
+      mEl.textContent = pad(mins);
+      sEl.textContent = pad(secs);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+
+    // Confetti (simple canvas)
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    function resize(){
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    let particles = [];
+    function startConfetti(){
+      particles = Array.from({length: 220}, () => ({
+        x: Math.random()*canvas.width,
+        y: -20 - Math.random()*canvas.height,
+        r: 4 + Math.random()*6,
+        vx: -2 + Math.random()*4,
+        vy: 2 + Math.random()*6,
+        a: Math.random()*Math.PI*2,
+        hue: Math.random()*360
+      }));
+      requestAnimationFrame(draw);
+    }
+    function draw(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      for(const p of particles){
+        p.x += p.vx;
+        p.y += p.vy;
+        p.a += 0.03;
+
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.a);
+        ctx.fillStyle = `hsl(${p.hue}, 90%, 60%)`;
+        ctx.fillRect(-p.r, -p.r, p.r*2, p.r*2);
+        ctx.restore();
+
+        if (p.y > canvas.height + 30){
+          p.y = -20;
+          p.x = Math.random()*canvas.width;
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+  </script>
 </body>
 </html>
